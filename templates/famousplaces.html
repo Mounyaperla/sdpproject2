@@ -1,0 +1,21 @@
+def famousplaces(request):
+    return render(request,'famousplaces.html')
+def weather(request):
+    return render(request,'weather.html')
+import requests
+def weatherlogic(request):
+    if request.method == 'POST':
+        place = request.POST['place']
+        API_KEY = '6e86dc9676fc39c3ce1b6783b01927c4'
+        url = f'http://api.openweathermap.org/data/2.5/weather?q={place}&appid={API_KEY}'
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            temperature = data['main']['temp']
+            humidity = data['main']['humidity']
+            temperature1= round(temperature - 273.15,2)
+            return render(request, 'weather.html',
+                          {'city': str.upper(place), 'temperature1': temperature1, 'humidity': humidity})
+        else:
+            error_message = 'City not found. Please try again.'
+            return render(request, 'weather.html', {'error_message': error_message})
